@@ -42,9 +42,9 @@ def load_data(database_filepath):
     # features
     X = df['message'].values
     # labels
-    Y = df.loc[:, 'related':'direct_report'].values
+    Y = df.drop(['id', 'message', 'original', 'genre'], axis = 1)
 
-    category_names = df.loc[:, 'related':'direct_report'].columns
+    category_names = Y.columns
 
     return X, Y, category_names
 
@@ -81,16 +81,33 @@ def build_model():
     ])
     return pipeline_random
 
+
+def display_results(y_test, y_pred, y_col):
+    """
+        Display f1 score, precision, recall, accuracy and confusion_matrix
+        for each category of the test dataset
+    """
+
+    clf_report = classification_report(y_test, y_pred)
+    accuracy = (y_pred == y_test).mean()
+    print(y_col, ":")
+    print('\n')
+    print(clf_report)
+    print('Accuracy =', accuracy)
+    print('-'*60)
+    print('\n')
+    
+    
 def evaluate_model(model, X_test, Y_test, category_names):
     Y_pred = model.predict(X_test)
 
-#     col=0
-#     cols = Y_test.columns
-#     for categorie in Y_test.columns:
-#         display_results(Y_test[categorie],
-#                         Y_pred[:,col],
-#                         categorie)
-#         col+=1
+    col=0
+    for categorie in category_names:
+        display_results(Y_test[categorie],
+                        Y_pred[:,col],
+                        categorie)
+        col+=1
+    print("Total Accuracy :")
     print((Y_pred == Y_test).mean().mean())
 
 
@@ -144,20 +161,6 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
         return pd.DataFrame(X_tagged)
 
     
-def display_results(y_test, y_pred, y_col):
-    """
-        Display f1 score, precision, recall, accuracy and confusion_matrix
-        for each category of the test dataset
-    """
-
-    clf_report = classification_report(y_test, y_pred)
-    accuracy = (y_pred == y_test).mean()
-    print(y_col, ":")
-    print('\n')
-    print(clf_report)
-    print('Accuracy =', accuracy)
-    print('-'*60)
-    print('\n')
     
 def main():
     if len(sys.argv) == 3:
