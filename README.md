@@ -32,6 +32,8 @@ app
   
 * run.py : Flask file that runs app
 
+images : screen shots of web application
+
 ETL Pipeline Preparation.ipynb: ETL Pipeline Preparation Jupyter notebook
 
 ML Pipeline Preparation.ipynb: ML Pipeline Preparation Jupyter notebook
@@ -51,3 +53,12 @@ LICENSE.txt: MIT License
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+
+#### App
+A web app is developed where an emergency worker can input a new message and get classification results in several categories.
+How to run the app can be found in the Instructions section provided by [Udacity](https://www.udacity.com).
+
+
+![MainPage_1](/images/main.png)
+
+![MainPage_2](/images/result.png)
