@@ -50,6 +50,10 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+        Tokenize the input text. With removing punctuation marks, lowercase, verb identify
+        return : tokenized words
+    """
     text = text.lower()
     text = re.sub(r"[^a-zA-z0-9]"," ",text)
     words = word_tokenize(text)
@@ -66,6 +70,11 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Create pipeline to train model
+    USE FeatureUnion to combine 2 parallel pipes
+    USE GridSearch for better hyperparameter optimization
+    """
     pipeline_random = Pipeline([
     ('features', FeatureUnion([
 
@@ -79,7 +88,20 @@ def build_model():
 
     ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-    return pipeline_random
+    
+    """
+    parameter tuning practices :)
+    """
+    
+    parameters = {
+        'clf__estimator__n_estimators': [10, 100, 200],
+        'clf__estimator__criterion'      : ['gini', 'entropy']
+    }
+    
+    cv = GridSearchCV(pipeline_random, param_grid=parameters,
+                  cv=2, n_jobs=-1, verbose=2)
+    
+    return cv
 
 
 def display_results(y_test, y_pred, y_col):
@@ -99,10 +121,14 @@ def display_results(y_test, y_pred, y_col):
     
     
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+        Inuput : trained model, testing data as X and Y with category values for dispalying results
+    """
     Y_pred = model.predict(X_test)
 
     col=0
     for categorie in category_names:
+        """Print classification report for each category"""
         display_results(Y_test[categorie],
                         Y_pred[:,col],
                         categorie)
@@ -112,6 +138,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+        Save the model for future use to provided model_filepath
+    """
     pickle.dump(model,open('./models/classifier.pkl','wb'))
 
     
